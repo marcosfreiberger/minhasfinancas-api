@@ -3,13 +3,13 @@ package com.freiberger.minhasfinancas.service;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.freiberger.minhasfinancas.exception.ErroAutenticacao;
 import com.freiberger.minhasfinancas.exception.RegraNegocioException;
@@ -17,7 +17,7 @@ import com.freiberger.minhasfinancas.model.entity.Usuario;
 import com.freiberger.minhasfinancas.model.repository.UsuarioRepository;
 import com.freiberger.minhasfinancas.service.impl.UsuarioServiceImpl;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 public class UsuarioServiceTest {
 	
@@ -27,7 +27,7 @@ public class UsuarioServiceTest {
 	@MockBean
 	UsuarioRepository repository;
 	
-	@Test(expected = Test.None.class)
+	@Test
 	public void deveSalvarUmUsuario() {
 		
 		//cenário
@@ -48,7 +48,7 @@ public class UsuarioServiceTest {
 
 	}
 	
-	@Test(expected = RegraNegocioException.class)
+	@Test
 	public void naoDeveSalvarUmUsuarioComEmailJaCadastrado() {
 		
 		//cenário
@@ -57,13 +57,13 @@ public class UsuarioServiceTest {
 		Mockito.doThrow(RegraNegocioException.class).when(service).validarEmail(email);
 		
 		//ação
-		service.salvarUsuario(usuario);
+		org.junit.jupiter.api.Assertions.assertThrows(RegraNegocioException.class, () -> service.salvarUsuario(usuario));
 		
 		//verificação
 		Mockito.verify(repository, Mockito.never()).save(usuario);
 	}
 	
-	@Test(expected = Test.None.class)
+	@Test
 	public void deveAutenticarUmUsuarioComSucesso() {
 		
 		//cenário
@@ -104,7 +104,7 @@ public class UsuarioServiceTest {
 		Assertions.assertThat(exception).isInstanceOf(ErroAutenticacao.class).hasMessage("Senha inválida.");
 	}
 	
-	@Test(expected = Test.None.class)
+	@Test
 	public void deveValidarEmail() {
 		
 		//cenário
@@ -115,14 +115,14 @@ public class UsuarioServiceTest {
 		
 	}
 	
-	@Test(expected = RegraNegocioException.class)
+	@Test
 	public void deveLancarErroAoValidarEmailQuandoExistirEmailCadastrado() {
 		
 		//cenário
 		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenReturn(true);
 		
 		//ação
-		service.validarEmail("email@email.com");
+		org.junit.jupiter.api.Assertions.assertThrows(RegraNegocioException.class, () -> service.validarEmail("email@email.com"));
 		
 	}
 
